@@ -1,27 +1,30 @@
 package com.revolut.accountservice;
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static spark.Spark.get;
 
 public class App
 {
+	public static final String DATABASE_URL = "jdbc:sqlite:memory:DB";
+	
 	public static void main(String[] args) {
-//		get("/hello", (req, res) -> "Hello, World!");
-		createNewDatabase("DB");
+		get("/hello", (req, res) -> "Hello, World!");
+		createNewDatabase();
 		
 	}
 	
-	public static void createNewDatabase(String name){
-		String url = "jdbc:sqlite:memory:" + name;
-		try(Connection connection = DriverManager.getConnection(url))
+	public static void createNewDatabase(){
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setUrl(DATABASE_URL);
+		try
 		{
-			DatabaseMetaData meta = connection.getMetaData();
-			System.out.println("The driver name is " + meta.getDriverName());
-			System.out.println("A new database has been created.");
-			
+			Connection connection = dataSource.getConnection();
+			Statement statement = connection.createStatement();
+			System.out.println(statement);
 		} catch(SQLException e)
 		{
 			e.printStackTrace();
