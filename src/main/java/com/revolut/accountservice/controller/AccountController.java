@@ -6,7 +6,7 @@ import static spark.Spark.get;
 
 public class AccountController
 {
-	private AccountService accountService;
+	private final AccountService accountService;
 	
 	public AccountController(AccountService accountService)
 	{

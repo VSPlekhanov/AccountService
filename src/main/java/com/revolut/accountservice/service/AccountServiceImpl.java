@@ -8,7 +8,12 @@ import com.revolut.accountservice.model.Account;
 
 public class AccountServiceImpl implements AccountService
 {
-	private AccountDAO accountDAO;
+	private final AccountDAO accountDAO;
+	
+	public AccountServiceImpl(AccountDAO accountDAO)
+	{
+		this.accountDAO = accountDAO;
+	}
 	
 	@Override public String getAccount(String accountId)
 	{
