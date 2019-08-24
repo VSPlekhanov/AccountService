@@ -1,8 +1,38 @@
 package com.revolut.accountservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Account
 {
-	private long id;
-	private String name;
-	private double amount;
+	@JsonProperty("id")
+	private final long id;
+	
+	@JsonProperty("balance")
+	private final BigDecimal balance;
+	
+	public Account(long id, BigDecimal balance)
+	{
+		this.id = id;
+		this.balance = balance;
+	}
+	
+	public Account(ResultSet resultSet) throws SQLException
+	{
+		id = resultSet.getInt(1);
+		balance = resultSet.getBigDecimal(2);
+	}
+	
+	public long getId()
+	{
+		return id;
+	}
+	
+	public BigDecimal getBalance()
+	{
+		return balance;
+	}
 }

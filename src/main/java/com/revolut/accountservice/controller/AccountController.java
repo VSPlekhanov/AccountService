@@ -16,6 +16,9 @@ public class AccountController
 	
 	private void setupRoutes()
 	{
-
+		get("/:accountId", (req, res) -> {
+			String accountId = req.params(":accountId");
+			return accountService.getAccount(accountId);
+		});
 	}
 }
