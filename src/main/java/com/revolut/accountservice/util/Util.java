@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class Util
 {
 	public static BigDecimal parseLongValueFromDatabase(long value){
-		return BigDecimal.valueOf(value / 100, (int) value % 100);
+		return BigDecimal.valueOf(value).divide(BigDecimal.valueOf(100));
 	}
 	
 	public static long parseBigDecimalAmountValue(BigDecimal value){
