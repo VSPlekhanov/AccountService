@@ -3,6 +3,8 @@ package com.revolut.accountservice.controller;
 import com.revolut.accountservice.service.AccountService;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.put;
 
 public class AccountController
 {
@@ -19,6 +21,15 @@ public class AccountController
 		get("/:accountId", (req, res) -> {
 			String accountId = req.params(":accountId");
 			return accountService.getAccount(accountId);
+		});
+		
+		
+		put("/:accountSenderId/:accountReceiverId", (req, res) -> {
+			accountService.transfer(
+					req.params(":accountSenderId"),
+					req.params(":accountReceiverId"),
+					req.queryParams("amount"));
+			return null;
 		});
 	}
 }

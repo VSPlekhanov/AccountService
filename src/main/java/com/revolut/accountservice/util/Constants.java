@@ -13,4 +13,5 @@ public class Constants
 	
 	public static final String INSERT_INTO_ACCOUNT = "INSERT INTO account(balance) VALUES(?)";
 	
+	public static final String UPDATE_ACCOUNT_BY_ID = "UPDATE account SET balance = ? WHERE id = ?";
 }

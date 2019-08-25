@@ -1,6 +1,7 @@
 package com.revolut.accountservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.revolut.accountservice.util.Util;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -23,7 +24,7 @@ public class Account
 	public Account(ResultSet resultSet) throws SQLException
 	{
 		id = resultSet.getInt(1);
-		balance = resultSet.getBigDecimal(2);
+		balance = Util.parseLongValueFromDatabase(resultSet.getLong(2));
 	}
 	
 	public long getId()
