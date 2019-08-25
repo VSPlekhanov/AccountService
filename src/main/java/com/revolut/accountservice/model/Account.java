@@ -24,7 +24,7 @@ public class Account
 	public Account(ResultSet resultSet) throws SQLException
 	{
 		id = resultSet.getInt(1);
-		balance = Util.parseLongValueFromDatabase(resultSet.getLong(2));
+		balance = Util.parseLongValueFromDatabaseFormat(resultSet.getLong(2));
 	}
 	
 	public long getId()

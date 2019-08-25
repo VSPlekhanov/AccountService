@@ -41,13 +41,13 @@ public class AccountDAOImpl implements AccountDAO
 			// TODO: 8/25/2019 haandle the errors
 //			connection.setAutoCommit(false);
 			Account sender = getAccount(senderId);
-			long senderNewBalance = Util.parseBigDecimalAmountValue(sender.getBalance().subtract(amount));
+			long senderNewBalance = Util.parseBigDecimalValueToDatabaseFormat(sender.getBalance().subtract(amount));
 			
 			if(senderNewBalance < 0){
 				throw new IllegalStateException("insufficient funds for the transaction");
 			}
 			Account receiver = getAccount(receiverId);
-			long receiverNewBalance = Util.parseBigDecimalAmountValue(receiver.getBalance().add(amount));
+			long receiverNewBalance = Util.parseBigDecimalValueToDatabaseFormat(receiver.getBalance().add(amount));
 			
 			updateSenderAccount.setLong(1, senderNewBalance);
 			updateSenderAccount.setLong(2, senderId);

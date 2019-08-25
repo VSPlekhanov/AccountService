@@ -40,6 +40,12 @@ public class AccountServiceImpl implements AccountService
 		long senderId = Long.parseLong(accountSenderId);
 		long receiverId = Long.parseLong(accountReceiverId);
 		BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(transferAmount));
+		if(amount.compareTo(BigDecimal.ZERO) <= 0){
+			throw new IllegalStateException("The amount should be greater than zero");
+		}
+		if(amount.scale() > 2){
+			throw new IllegalStateException("The amount scale should be less than 3");
+		}
 		accountDAO.transfer(senderId, receiverId, amount);
 	}
 }
