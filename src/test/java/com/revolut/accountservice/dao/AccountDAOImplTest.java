@@ -2,6 +2,7 @@ package com.revolut.accountservice.dao;
 
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.util.Constants;
+import com.revolut.accountservice.util.Util;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,9 +22,9 @@ class AccountDAOImplTest
 	private static DataSource dataSource;
 	private static AccountDAO accountDAO;
 	
-	private static final long FIRST_ACCOUNT_DEFAULT_BALANCE = 1000;
-	private static final long SECOND_ACCOUNT_DEFAULT_BALANCE = 2000;
-	private static final long THIRD_ACCOUNT_DEFAULT_BALANCE = 3000;
+	private static final BigDecimal FIRST_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(1000);
+	private static final BigDecimal SECOND_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(2000);
+	private static final BigDecimal THIRD_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(3000);
 	
 	
 	@BeforeAll
@@ -51,13 +52,13 @@ class AccountDAOImplTest
 							Constants.INSERT_INTO_ACCOUNT))
 			{
 				
-				insertFirstAccount.setLong(1, FIRST_ACCOUNT_DEFAULT_BALANCE);
+				insertFirstAccount.setLong(1, Util.parseBigDecimalAmountValue(FIRST_ACCOUNT_DEFAULT_BALANCE));
 				insertFirstAccount.execute();
 				
-				insertSecondAccount.setLong(1, SECOND_ACCOUNT_DEFAULT_BALANCE);
+				insertSecondAccount.setLong(1, Util.parseBigDecimalAmountValue(SECOND_ACCOUNT_DEFAULT_BALANCE));
 				insertSecondAccount.execute();
 				
-				insertThirdAccount.setLong(1, THIRD_ACCOUNT_DEFAULT_BALANCE);
+				insertThirdAccount.setLong(1, Util.parseBigDecimalAmountValue(THIRD_ACCOUNT_DEFAULT_BALANCE));
 				insertThirdAccount.execute();
 			}
 		}catch(SQLException e)
@@ -83,15 +84,15 @@ class AccountDAOImplTest
 	void getAccount()
 	{
 		Account firstAccount = accountDAO.getAccount(1);
-		assertEquals(BigDecimal.valueOf(FIRST_ACCOUNT_DEFAULT_BALANCE), firstAccount.getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getBalance());
 		assertEquals(1, firstAccount.getId());
 		
 		Account secondAccount = accountDAO.getAccount(1);
-		assertEquals(BigDecimal.valueOf(FIRST_ACCOUNT_DEFAULT_BALANCE), secondAccount.getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, secondAccount.getBalance());
 		assertEquals(1, secondAccount.getId());
 		
 		Account thirdAccount = accountDAO.getAccount(1);
-		assertEquals(BigDecimal.valueOf(FIRST_ACCOUNT_DEFAULT_BALANCE), thirdAccount.getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, thirdAccount.getBalance());
 		assertEquals(1, thirdAccount.getId());
 	}
 }
