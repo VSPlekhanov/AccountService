@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public interface AccountDAO
 {
-	Account getAccount(long accountId);
+	Account getAccount(long accountId) throws Exception;
 	
-	void transfer(long senderId, long receiverId, BigDecimal amount);
+	void transfer(long senderId, long receiverId, BigDecimal amount) throws Exception;
 }

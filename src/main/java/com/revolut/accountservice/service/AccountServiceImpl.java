@@ -17,7 +17,7 @@ public class AccountServiceImpl implements AccountService
 		this.accountDAO = accountDAO;
 	}
 	
-	@Override public String getAccount(String accountId)
+	@Override public String getAccount(String accountId) throws Exception
 	{
 		long id = Long.parseLong(accountId);
 		Account account = accountDAO.getAccount(id);
@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService
 	}
 	
 	@Override
-	public void transfer(String accountSenderId, String accountReceiverId, String transferAmount)
+	public void transfer(String accountSenderId, String accountReceiverId, String transferAmount) throws Exception
 	{
 		// TODO: 8/25/2019 handle the exceptions
 		long senderId = Long.parseLong(accountSenderId);

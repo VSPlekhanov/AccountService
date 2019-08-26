@@ -27,23 +27,19 @@ public class AccountDAOImpl implements AccountDAO
 		writeLock = reentrantReadWriteLock.writeLock();
 	}
 	
-	@Override public Account getAccount(long accountId)
+	@Override public Account getAccount(long accountId) throws Exception
 	{
 		readLock.lock();
 		try(Connection connection = dataSource.getConnection())
 		{
 			return getAccount(accountId, connection);
-		} catch(SQLException e)
-		{
-			e.printStackTrace();
 		} finally
 		{
 			readLock.unlock();
 		}
-		return null;
 	}
 	
-	@Override public void transfer(long senderId, long receiverId, BigDecimal amount)
+	@Override public void transfer(long senderId, long receiverId, BigDecimal amount) throws Exception
 	{
 		try(Connection connection = dataSource.getConnection();
 				PreparedStatement updateSenderAccount = connection.prepareStatement(Constants.UPDATE_ACCOUNT_BY_ID);
@@ -78,18 +74,15 @@ public class AccountDAOImpl implements AccountDAO
 			} catch(Exception e)
 			{
 				connection.rollback();
+				throw e;
 			} finally
 			{
 				writeLock.unlock();
 			}
-			
-		} catch(Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 	
-	private Account getAccount(long accountId, Connection connection)
+	private Account getAccount(long accountId, Connection connection) throws Exception
 	{
 		try(PreparedStatement preparedStatement = connection.prepareStatement(
 				Constants.GET_ACCOUNT_BY_ID))
@@ -100,11 +93,6 @@ public class AccountDAOImpl implements AccountDAO
 				resultSet.next();
 				return new Account(resultSet);
 			}
-			
-		} catch(SQLException e)
-		{
-			e.printStackTrace();
 		}
-		return null;
 	}
 }

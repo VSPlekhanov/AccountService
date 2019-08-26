@@ -13,11 +13,7 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,7 +86,7 @@ class AccountDAOImplTest
 	}
 	
 	@Test
-	void getAccount()
+	void getAccount() throws Exception
 	{
 		Account firstAccount = accountDAO.getAccount(FIRST_ACCOUNT_ID);
 		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getBalance());
@@ -105,7 +101,7 @@ class AccountDAOImplTest
 		assertEquals(THIRD_ACCOUNT_ID, thirdAccount.getId());
 	}
 	
-	@Test void transferAllMoneyFromFirst2Second()
+	@Test void transferAllMoneyFromFirst2Second() throws Exception
 	{
 		BigDecimal amount = FIRST_ACCOUNT_DEFAULT_BALANCE;
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
@@ -115,7 +111,8 @@ class AccountDAOImplTest
 		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
 	}
 	
-	@Test void transferTooMuchMoney(){
+	@Test void transferTooMuchMoney() throws Exception
+	{
 		assertThrows(IllegalStateException.class,
 				() -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, FIRST_ACCOUNT_DEFAULT_BALANCE.add(BigDecimal.ONE)));
 		
@@ -124,7 +121,8 @@ class AccountDAOImplTest
 		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
 	}
 	
-	@Test void transferFromFirst2SecondThenFromSecond2Third(){
+	@Test void transferFromFirst2SecondThenFromSecond2Third() throws Exception
+	{
 		BigDecimal amount = BigDecimal.valueOf(500);
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 		accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
@@ -134,7 +132,8 @@ class AccountDAOImplTest
 		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE.add(amount), accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
 	}
 	
-	@Test void transferThroughAllByCircle(){
+	@Test void transferThroughAllByCircle() throws Exception
+	{
 		BigDecimal amount = BigDecimal.valueOf(500);
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 		accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
@@ -145,17 +144,26 @@ class AccountDAOImplTest
 		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
 	}
 	
-	@Test void smallMultithreadTest(){
-		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 100);
+	@Test void smallMultithreadTest() throws Exception
+	{
+		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 20);
 		
-		Runnable fromFirstAccount2Second = () ->
-			IntStream.range(0, count)
-					.forEach((i) -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, BigDecimal.ONE));
+		Runnable fromFirstAccount2Second = () ->{
+			for(int i = 0; i < count; i++) {
+				try {
+					accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, BigDecimal.ONE);
+				} catch(Exception e) {
+					e.printStackTrace();
+				} } };
 		
-		Runnable fromSecondAccount2First = () ->
-				IntStream.range(0, count)
-						.forEach((i) -> accountDAO.transfer(SECOND_ACCOUNT_ID, FIRST_ACCOUNT_ID, BigDecimal.ONE));
-		
+		Runnable fromSecondAccount2First = () ->{
+			for(int i = 0; i < count; i++) {
+				try {
+					accountDAO.transfer(SECOND_ACCOUNT_ID, FIRST_ACCOUNT_ID, BigDecimal.ONE);
+				} catch(Exception e) {
+					e.printStackTrace();
+				} } };
+			
 		Thread first = new Thread(fromFirstAccount2Second);
 		Thread second = new Thread(fromSecondAccount2First);
 		
