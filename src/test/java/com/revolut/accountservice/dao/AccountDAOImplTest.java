@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -145,7 +146,7 @@ class AccountDAOImplTest
 	}
 	
 	@Test void smallMultithreadTest(){
-		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 1_00);
+		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 100);
 		
 		Runnable fromFirstAccount2Second = () ->
 			IntStream.range(0, count)
@@ -169,29 +170,6 @@ class AccountDAOImplTest
 		{
 			e.printStackTrace();
 		}
-		
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
-	}
-	
-	
-	@Test void smallMultithreadTest2(){
-		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 50);
-		
-		ExecutorService executorService = Executors.newCachedThreadPool();
-		Runnable fromFirstAccount2Second = () ->
-				IntStream.range(0, count)
-						.forEach((i) -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, BigDecimal.ONE));
-		
-		Runnable fromSecondAccount2First = () ->
-				IntStream.range(0, count)
-						.forEach((i) -> accountDAO.transfer(SECOND_ACCOUNT_ID, FIRST_ACCOUNT_ID, BigDecimal.ONE));
-		
-		executorService.submit(fromFirstAccount2Second);
-		executorService.submit(fromSecondAccount2First);
-		
-		executorService.shutdown();
 		
 		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
 		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
