@@ -11,6 +11,10 @@ import static spark.Spark.get;
 public class App
 {
 	public static void main(String[] args) {
+		// TODO: 8/26/2019 configure app starting
+		// TODO: 8/26/2019 add logging
+		// TODO: 8/26/2019 handle all errors
+		// TODO: 8/26/2019 write all tests
 		get("/hello", (req, res) -> "Hello, World!");
 		createNewDatabase();
 		
