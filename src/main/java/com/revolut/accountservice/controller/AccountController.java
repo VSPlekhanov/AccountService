@@ -1,35 +1,26 @@
 package com.revolut.accountservice.controller;
 
-import com.revolut.accountservice.service.AccountService;
+import com.revolut.accountservice.dao.AccountDAO;
+import com.revolut.accountservice.service.GetAccountHandler;
+import com.revolut.accountservice.service.TransferHandler;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
-import static spark.Spark.put;
 
 public class AccountController
 {
-	private final AccountService accountService;
+	private final AccountDAO accountDAO;
 	
-	public AccountController(AccountService accountService)
+	public AccountController(AccountDAO accountDAO)
 	{
-		this.accountService = accountService;
+		this.accountDAO = accountDAO;
 		setupRoutes();
 	}
 	
 	private void setupRoutes()
 	{
-		get("/:accountId", (req, res) -> {
-			String accountId = req.params(":accountId");
-			return accountService.getAccount(accountId);
-		});
+		get("/:accountId", new GetAccountHandler(accountDAO));
 		
-		
-		put("/:accountSenderId/:accountReceiverId", (req, res) -> {
-			accountService.transfer(
-					req.params(":accountSenderId"),
-					req.params(":accountReceiverId"),
-					req.queryParams("amount"));
-			return null;
-		});
+		post("/transfer", new TransferHandler(accountDAO));
 	}
 }

@@ -11,11 +11,9 @@ public class Account
 {
 	@JsonProperty("id")
 	private final long id;
+	private final long balance;
 	
-	@JsonProperty("balance")
-	private final BigDecimal balance;
-	
-	public Account(long id, BigDecimal balance)
+	public Account(long id, long balance)
 	{
 		this.id = id;
 		this.balance = balance;
@@ -24,7 +22,7 @@ public class Account
 	public Account(ResultSet resultSet) throws SQLException
 	{
 		id = resultSet.getInt(1);
-		balance = Util.parseLongValueFromDatabaseFormat(resultSet.getLong(2));
+		balance = resultSet.getLong(2);
 	}
 	
 	public long getId()
@@ -32,8 +30,13 @@ public class Account
 		return id;
 	}
 	
-	public BigDecimal getBalance()
+	public long getLongBalance()
 	{
 		return balance;
+	}
+	
+	@JsonProperty("balance")
+	public BigDecimal getBalance(){
+		return BigDecimal.valueOf(balance).divide(BigDecimal.valueOf(100));
 	}
 }

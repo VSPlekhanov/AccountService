@@ -15,6 +15,8 @@ public class App
 		// TODO: 8/26/2019 add logging
 		// TODO: 8/26/2019 handle all errors
 		// TODO: 8/26/2019 write all tests
+		// TODO: 8/27/2019 javadoc, rest api docs
+		// TODO: 8/27/2019 handle case when there is no acocunt with given id
 		get("/hello", (req, res) -> "Hello, World!");
 		createNewDatabase();
 		

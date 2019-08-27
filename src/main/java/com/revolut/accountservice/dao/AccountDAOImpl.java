@@ -5,11 +5,9 @@ import com.revolut.accountservice.util.Constants;
 import com.revolut.accountservice.util.Util;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -39,7 +37,7 @@ public class AccountDAOImpl implements AccountDAO
 		}
 	}
 	
-	@Override public void transfer(long senderId, long receiverId, BigDecimal amount) throws Exception
+	@Override public void transfer(long senderId, long receiverId, long amount) throws Exception
 	{
 		try(Connection connection = dataSource.getConnection();
 				PreparedStatement updateSenderAccount = connection.prepareStatement(Constants.UPDATE_ACCOUNT_BY_ID);
@@ -51,16 +49,14 @@ public class AccountDAOImpl implements AccountDAO
 			try
 			{
 				Account sender = getAccount(senderId, connection);
-				long senderNewBalance = Util.parseBigDecimalValueToDatabaseFormat(
-						sender.getBalance().subtract(amount));
+				long senderNewBalance = sender.getLongBalance() - amount;
 				
 				if(senderNewBalance < 0)
 				{
 					throw new IllegalStateException("insufficient funds for the transaction");
 				}
 				Account receiver = getAccount(receiverId, connection);
-				long receiverNewBalance = Util.parseBigDecimalValueToDatabaseFormat(
-						receiver.getBalance().add(amount));
+				long receiverNewBalance = receiver.getLongBalance() + amount;
 				
 				updateSenderAccount.setLong(1, senderNewBalance);
 				updateSenderAccount.setLong(2, senderId);

@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,9 +22,9 @@ class AccountDAOImplTest
 	private static DataSource dataSource;
 	private static AccountDAO accountDAO;
 	
-	private static final BigDecimal FIRST_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(1_000_000);
-	private static final BigDecimal SECOND_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(2_000_000);
-	private static final BigDecimal THIRD_ACCOUNT_DEFAULT_BALANCE = BigDecimal.valueOf(3_000_000);
+	private static final long FIRST_ACCOUNT_DEFAULT_BALANCE = 1_000_000;
+	private static final long SECOND_ACCOUNT_DEFAULT_BALANCE = 2_000_000;
+	private static final long THIRD_ACCOUNT_DEFAULT_BALANCE = 3_000_000;
 	
 	private static final long FIRST_ACCOUNT_ID = 1;
 	private static final long SECOND_ACCOUNT_ID = 2;
@@ -57,13 +56,13 @@ class AccountDAOImplTest
 							Constants.INSERT_INTO_ACCOUNT))
 			{
 				
-				insertFirstAccount.setLong(1, Util.parseBigDecimalValueToDatabaseFormat(FIRST_ACCOUNT_DEFAULT_BALANCE));
+				insertFirstAccount.setLong(1, FIRST_ACCOUNT_DEFAULT_BALANCE);
 				insertFirstAccount.execute();
 				
-				insertSecondAccount.setLong(1, Util.parseBigDecimalValueToDatabaseFormat(SECOND_ACCOUNT_DEFAULT_BALANCE));
+				insertSecondAccount.setLong(1, SECOND_ACCOUNT_DEFAULT_BALANCE);
 				insertSecondAccount.execute();
 				
-				insertThirdAccount.setLong(1, Util.parseBigDecimalValueToDatabaseFormat(THIRD_ACCOUNT_DEFAULT_BALANCE));
+				insertThirdAccount.setLong(1, THIRD_ACCOUNT_DEFAULT_BALANCE);
 				insertThirdAccount.execute();
 			}
 		}catch(SQLException e)
@@ -89,69 +88,69 @@ class AccountDAOImplTest
 	void getAccount() throws Exception
 	{
 		Account firstAccount = accountDAO.getAccount(FIRST_ACCOUNT_ID);
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getLongBalance());
 		assertEquals(FIRST_ACCOUNT_ID, firstAccount.getId());
 		
 		Account secondAccount = accountDAO.getAccount(SECOND_ACCOUNT_ID);
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, secondAccount.getBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, secondAccount.getLongBalance());
 		assertEquals(SECOND_ACCOUNT_ID, secondAccount.getId());
 		
 		Account thirdAccount = accountDAO.getAccount(THIRD_ACCOUNT_ID);
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, thirdAccount.getBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, thirdAccount.getLongBalance());
 		assertEquals(THIRD_ACCOUNT_ID, thirdAccount.getId());
 	}
 	
 	@Test void transferAllMoneyFromFirst2Second() throws Exception
 	{
-		BigDecimal amount = FIRST_ACCOUNT_DEFAULT_BALANCE;
+		long amount = FIRST_ACCOUNT_DEFAULT_BALANCE;
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 		
-		assertEquals(BigDecimal.ZERO, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE.add(amount), accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
+		assertEquals(0, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
 	}
 	
 	@Test void transferTooMuchMoney() throws Exception
 	{
 		assertThrows(IllegalStateException.class,
-				() -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, FIRST_ACCOUNT_DEFAULT_BALANCE.add(BigDecimal.ONE)));
+				() -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, FIRST_ACCOUNT_DEFAULT_BALANCE + 1));
 		
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
 	}
 	
 	@Test void transferFromFirst2SecondThenFromSecond2Third() throws Exception
 	{
-		BigDecimal amount = BigDecimal.valueOf(500);
+		long amount = (500);
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 		accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
 		
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE.subtract(amount), accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE.add(amount), accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE - (amount), accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
 	}
 	
 	@Test void transferThroughAllByCircle() throws Exception
 	{
-		BigDecimal amount = BigDecimal.valueOf(500);
+		long amount = (500);
 		accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 		accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
 		accountDAO.transfer(THIRD_ACCOUNT_ID, FIRST_ACCOUNT_ID, amount);
 		
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
 	}
 	
 	@Test void smallMultithreadTest() throws Exception
 	{
-		int count = Math.min(Math.min(FIRST_ACCOUNT_DEFAULT_BALANCE.intValue(), SECOND_ACCOUNT_DEFAULT_BALANCE.intValue()), 20);
+		int count = Math.min(Math.min((int)FIRST_ACCOUNT_DEFAULT_BALANCE, (int)SECOND_ACCOUNT_DEFAULT_BALANCE), 20);
 		
 		Runnable fromFirstAccount2Second = () ->{
 			for(int i = 0; i < count; i++) {
 				try {
-					accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, BigDecimal.ONE);
+					accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, 1);
 				} catch(Exception e) {
 					e.printStackTrace();
 				} } };
@@ -159,7 +158,7 @@ class AccountDAOImplTest
 		Runnable fromSecondAccount2First = () ->{
 			for(int i = 0; i < count; i++) {
 				try {
-					accountDAO.transfer(SECOND_ACCOUNT_ID, FIRST_ACCOUNT_ID, BigDecimal.ONE);
+					accountDAO.transfer(SECOND_ACCOUNT_ID, FIRST_ACCOUNT_ID, 1);
 				} catch(Exception e) {
 					e.printStackTrace();
 				} } };
@@ -179,9 +178,9 @@ class AccountDAOImplTest
 			e.printStackTrace();
 		}
 		
-		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalance());
-		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalance());
-		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalance());
+		assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
+		assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
+		assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
 	}
 	
 }

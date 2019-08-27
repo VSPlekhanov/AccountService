@@ -8,5 +8,5 @@ public interface AccountDAO
 {
 	Account getAccount(long accountId) throws Exception;
 	
-	void transfer(long senderId, long receiverId, BigDecimal amount) throws Exception;
+	void transfer(long senderId, long receiverId, long amount) throws Exception;
 }
