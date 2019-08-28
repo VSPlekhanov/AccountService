@@ -1,7 +1,6 @@
 package com.revolut.accountservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.revolut.accountservice.util.Util;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

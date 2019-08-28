@@ -2,7 +2,6 @@ package com.revolut.accountservice.dao;
 
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.util.Constants;
-import com.revolut.accountservice.util.Util;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

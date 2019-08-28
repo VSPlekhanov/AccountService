@@ -2,7 +2,6 @@ package com.revolut.accountservice.dao;
 
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.util.Constants;
-import com.revolut.accountservice.util.Util;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

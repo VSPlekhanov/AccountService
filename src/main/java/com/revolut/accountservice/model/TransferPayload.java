@@ -40,20 +40,29 @@ public class TransferPayload implements Validable
 	@ConstructorProperties({"senderAccountId", "receiverAccountId", "amount"})
 	public TransferPayload(String senderAccountId, String receiverAccountId, String amount)
 	{
-		try
+		if(senderAccountId == null){
+			errorMessage = "senderAccountId is null!";
+		}else if(receiverAccountId == null){
+			errorMessage = "receiverAccountId is null!";
+		}else if(amount == null){
+			errorMessage = "amount is null!";
+		}else
 		{
-			this.senderAccountId = Long.parseLong(senderAccountId);
-			this.receiverAccountId = Long.parseLong(receiverAccountId);
-			double doubleAmount = Double.parseDouble(amount) * 100;
-			this.amount = (long) doubleAmount;
-			
-			if(doubleAmount - this.amount != 0)
+			try
 			{
-				errorMessage = "Wrong amount format, too much digits after point!";
+				this.senderAccountId = Long.parseLong(senderAccountId);
+				this.receiverAccountId = Long.parseLong(receiverAccountId);
+				double doubleAmount = Double.parseDouble(amount) * 100;
+				this.amount = (long) doubleAmount;
+				
+				if(doubleAmount - this.amount != 0)
+				{
+					errorMessage = "Wrong amount format, too much digits after point!";
+				}
+			} catch(NumberFormatException e)
+			{
+				errorMessage = String.format("%s : %s", e.getClass().getName(), e.getMessage());
 			}
-		} catch(NumberFormatException e)
-		{
-			errorMessage = e.getMessage();
 		}
 	}
 	
