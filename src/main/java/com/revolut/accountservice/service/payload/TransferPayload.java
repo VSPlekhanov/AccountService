@@ -1,7 +1,10 @@
-package com.revolut.accountservice.model;
+package com.revolut.accountservice.service.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+/*
+ * Copyright 2001-2019 by HireRight, Inc. All rights reserved.
+ * This software is the confidential and proprietary information
+ * of HireRight, Inc. Use is subject to license terms.
+ */
 
 import java.beans.ConstructorProperties;
 import java.util.Optional;

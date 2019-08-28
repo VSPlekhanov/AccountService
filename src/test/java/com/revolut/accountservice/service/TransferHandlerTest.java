@@ -2,7 +2,7 @@ package com.revolut.accountservice.service;
 
 import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.model.Answer;
-import com.revolut.accountservice.model.TransferPayload;
+import com.revolut.accountservice.service.payload.TransferPayload;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

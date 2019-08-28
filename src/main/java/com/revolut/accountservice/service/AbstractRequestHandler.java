@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
-import com.revolut.accountservice.model.Validable;
+import com.revolut.accountservice.service.payload.Validable;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractRequestHandler<V extends Validable>

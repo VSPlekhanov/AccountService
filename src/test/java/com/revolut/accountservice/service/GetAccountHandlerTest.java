@@ -3,7 +3,7 @@ package com.revolut.accountservice.service;
 		import com.revolut.accountservice.dao.AccountDAO;
 		import com.revolut.accountservice.model.Account;
 		import com.revolut.accountservice.model.Answer;
-		import com.revolut.accountservice.model.EmptyPayload;
+		import com.revolut.accountservice.service.payload.EmptyPayload;
 		import org.junit.jupiter.api.Test;
 		
 		import java.util.Collections;
