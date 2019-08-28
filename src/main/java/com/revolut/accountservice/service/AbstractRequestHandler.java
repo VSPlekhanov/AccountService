@@ -53,7 +53,7 @@ public abstract class AbstractRequestHandler<V extends Validable>
 	{
 		ObjectMapper objectMapper = new ObjectMapper();
 		V value = objectMapper.readValue(request.body(), valueClass);
-		Map<String, String> queryParams = new HashMap<>();
+		Map<String, String> queryParams = request.params();
 		Answer answer = process(value, queryParams);
 		response.status(answer.getCode());
 		response.type("application/json");

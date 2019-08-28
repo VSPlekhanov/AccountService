@@ -1,5 +1,6 @@
 package com.revolut.accountservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ public class Account
 {
 	@JsonProperty("id")
 	private final long id;
+	@JsonIgnore
 	private final long balance;
 	
 	public Account(long id, long balance)
@@ -29,6 +31,7 @@ public class Account
 		return id;
 	}
 	
+	@JsonIgnore
 	public long getLongBalance()
 	{
 		return balance;

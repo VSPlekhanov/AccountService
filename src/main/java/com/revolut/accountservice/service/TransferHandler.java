@@ -19,7 +19,7 @@ public class TransferHandler extends AbstractRequestHandler<TransferPayload>
 		{
 			accountDAO.transfer(value.getSenderAccountId(), value.getReceiverAccountId(), value.getAmount());
 		}catch(Exception e){
-			return new Answer(400, e.getMessage());
+			return new Answer(400, String.format("%s : %s", e.getClass().getName(), e.getMessage()));
 		}
 		return new Answer(204);
 	}
