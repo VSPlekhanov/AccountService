@@ -1,6 +1,7 @@
 package com.revolut.accountservice.service.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.revolut.accountservice.model.Account;
 
 import java.util.Optional;
 
@@ -24,16 +25,12 @@ public class TransferPayload implements Validable {
     public TransferPayload(@JsonProperty("senderAccountId") String senderAccountId,
                            @JsonProperty("receiverAccountId") String receiverAccountId,
                            @JsonProperty("amount") String amount) {
-        if (senderAccountId == null) {
-            errorMessage = "senderAccountId is null!";
-        } else if (receiverAccountId == null) {
-            errorMessage = "receiverAccountId is null!";
-        } else if (amount == null) {
+        if (amount == null) {
             errorMessage = "amount is null!";
         } else {
             try {
-                this.senderAccountId = Long.parseLong(senderAccountId);
-                this.receiverAccountId = Long.parseLong(receiverAccountId);
+                this.senderAccountId = Account.parseAccountId(senderAccountId);
+                this.receiverAccountId = Account.parseAccountId(receiverAccountId);
                 double doubleAmount = Double.parseDouble(amount) * 100;
                 this.amount = (long) doubleAmount;
 
@@ -44,7 +41,7 @@ public class TransferPayload implements Validable {
                 } else if (this.receiverAccountId == this.senderAccountId) {
                     errorMessage = "Transfer to the same account is not allowed!";
                 }
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 errorMessage = e.toString();
             }
         }

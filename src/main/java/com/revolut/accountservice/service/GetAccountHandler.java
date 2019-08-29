@@ -21,18 +21,14 @@ public class GetAccountHandler extends AbstractRequestHandler<EmptyPayload> {
 
     @Override
     protected Answer processImpl(EmptyPayload value, Map<String, String> queryParams) {
-        String accountId = null;
+        String accountId;
         try {
             accountId = queryParams.get(ACCOUNT_ID);
-            if (accountId == null) {
-                log.warn("Failed to get accountId from given queryParams");
-                return new Answer(Constants.HTTP_BAD_REQUEST, "accountId is null!");
-            }
-            Account account = accountDAO.getAccount(Long.parseLong(accountId));
-            return new Answer(Constants.HTTP_OK, accountToJson(account));
-        } catch (NumberFormatException e) {
-            log.warn("Failed to parse accountId from given queryParams");
-            return new Answer(Constants.HTTP_BAD_REQUEST, "Cannot parse int value of accountId : " + accountId);
+            Account account = accountDAO.getAccount(Account.parseAccountId(accountId));
+            return new Answer(Constants.HTTP_OK, account.toJson());
+        } catch (IllegalArgumentException e) {
+            log.warn(e.toString());
+            return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
         } catch (NoSuchAccountException e) {
             return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
         } catch (Throwable e) {

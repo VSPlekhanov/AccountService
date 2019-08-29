@@ -5,7 +5,6 @@ import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,9 @@ class AccountDAOImplTest {
     @BeforeEach
     void setUp() {
         try (Connection connection = dataSource.getConnection();
+             PreparedStatement dropTable = connection.prepareStatement(daoProperties.getProperty("drop_table_account"));
              PreparedStatement createTable = connection.prepareStatement(daoProperties.getProperty("create_account_table"))) {
+            dropTable.execute();
             createTable.execute();
 
             try (PreparedStatement insertFirstAccount = connection.prepareStatement(
@@ -64,17 +65,6 @@ class AccountDAOImplTest {
                 insertThirdAccount.setLong(1, (THIRD_ACCOUNT_DEFAULT_BALANCE));
                 insertThirdAccount.execute();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @AfterEach
-    void tearDown() {
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(daoProperties.getProperty("drop_table_account"))) {
-            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }

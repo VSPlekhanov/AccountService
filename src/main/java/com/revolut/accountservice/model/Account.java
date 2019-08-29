@@ -2,6 +2,8 @@ package com.revolut.accountservice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -21,6 +23,18 @@ public class Account {
     public Account(ResultSet resultSet) throws SQLException {
         id = resultSet.getLong("id");
         balance = resultSet.getLong("balance");
+    }
+
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
+
+    public static long parseAccountId(String accountId){
+        if (accountId == null){
+            throw new IllegalArgumentException("accountId is null!");
+        }
+        return Long.parseLong(accountId);
     }
 
     public long getId() {

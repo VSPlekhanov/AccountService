@@ -1,10 +1,8 @@
 package com.revolut.accountservice.service;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revolut.accountservice.dao.AccountDAO;
-import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.Validable;
 import com.revolut.accountservice.util.Constants;
@@ -27,11 +25,6 @@ public abstract class AbstractRequestHandler<V extends Validable>
     public AbstractRequestHandler(Class<V> valueClass, AccountDAO accountDAO) {
         this.valueClass = valueClass;
         this.accountDAO = accountDAO;
-    }
-
-    public static String accountToJson(Account account) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(account);
     }
 
     public final Answer process(V value, Map<String, String> queryParams) {
