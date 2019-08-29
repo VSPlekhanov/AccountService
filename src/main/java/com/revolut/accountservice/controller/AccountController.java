@@ -19,7 +19,7 @@ public class AccountController
 	
 	private void setupRoutes()
 	{
-		get("/:accountId", new GetAccountHandler(accountDAO));
+		get("/:accountid", new GetAccountHandler(accountDAO));
 		
 		post("/transfer", new TransferHandler(accountDAO));
 	}

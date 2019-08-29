@@ -13,6 +13,7 @@ import java.util.Map;
 public class GetAccountHandler extends AbstractRequestHandler<EmptyPayload>
 {
 	private static final Logger log = LoggerFactory.getLogger(GetAccountHandler.class);
+	public static final String ACCOUNT_ID = ":accountid";
 	
 	public GetAccountHandler(AccountDAO accountDAO)
 	{
@@ -25,7 +26,7 @@ public class GetAccountHandler extends AbstractRequestHandler<EmptyPayload>
 		String accountId = null;
 		try
 		{
-			accountId = queryParams.get("accountId");
+			accountId = queryParams.get(ACCOUNT_ID);
 			if(accountId == null)
 			{
 				log.warn("Failed to get accountId from given queryParams");

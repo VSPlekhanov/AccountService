@@ -18,6 +18,7 @@ public abstract class AbstractRequestHandler<V extends Validable>
 		implements RequestHandler<V>, Route
 {
 	private static final Logger log = LoggerFactory.getLogger(AbstractRequestHandler.class);
+	public static final String EMPTY_BODY = "{}";
 	
 	private Class<V> valueClass;
 	protected AccountDAO accountDAO;
@@ -61,7 +62,10 @@ public abstract class AbstractRequestHandler<V extends Validable>
 	public Object handle(Request request, Response response) throws Exception
 	{
 		ObjectMapper objectMapper = new ObjectMapper();
-		V value = objectMapper.readValue(request.body(), valueClass);
+		String body = request.body().isEmpty()
+				? EMPTY_BODY
+				: request.body();
+		V value = objectMapper.readValue(body, valueClass);
 		Map<String, String> queryParams = request.params();
 		Answer answer = process(value, queryParams);
 		response.status(answer.getCode());

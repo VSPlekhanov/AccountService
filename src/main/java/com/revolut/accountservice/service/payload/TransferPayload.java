@@ -1,5 +1,8 @@
 package com.revolut.accountservice.service.payload;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.beans.ConstructorProperties;
 import java.util.Optional;
 
@@ -8,6 +11,7 @@ public class TransferPayload implements Validable
 	private long senderAccountId;
 	private long receiverAccountId;
 	private long amount;
+	@JsonIgnore
 	private String errorMessage;
 	
 	@Override public boolean isValid()
@@ -34,8 +38,10 @@ public class TransferPayload implements Validable
 	}
 	
 	
-	@ConstructorProperties({"senderAccountId", "receiverAccountId", "amount"})
-	public TransferPayload(String senderAccountId, String receiverAccountId, String amount)
+//	@ConstructorProperties({"senderAccountId", "receiverAccountId", "amount"})
+	public TransferPayload(@JsonProperty("senderAccountId") String senderAccountId,
+			@JsonProperty("receiverAccountId") String receiverAccountId,
+			@JsonProperty("amount") String amount)
 	{
 		if(senderAccountId == null){
 			errorMessage = "senderAccountId is null!";
