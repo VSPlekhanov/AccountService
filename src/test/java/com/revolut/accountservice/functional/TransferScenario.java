@@ -13,19 +13,18 @@ import static org.jbehave.core.reporters.Format.HTML;
 import static org.jbehave.core.reporters.Format.TXT;
 import static org.jbehave.core.reporters.Format.XML;
 
-public class TransferScenario extends JUnitStory
-{
-	@Override
-	public Configuration configuration() {
-		return new MostUsefulConfiguration()
-				.useStoryLoader(new LoadFromClasspath(this.getClass()))
-				.useStoryReporterBuilder(new StoryReporterBuilder()
-						.withDefaultFormats()
-						.withFormats(CONSOLE, TXT, HTML, XML));
-	}
-	
-	@Override
-	public InjectableStepsFactory stepsFactory() {
-		return new InstanceStepsFactory(configuration(), new TransferSteps());
-	}
+public class TransferScenario extends JUnitStory {
+    @Override
+    public Configuration configuration() {
+        return new MostUsefulConfiguration()
+                .useStoryLoader(new LoadFromClasspath(this.getClass()))
+                .useStoryReporterBuilder(new StoryReporterBuilder()
+                        .withDefaultFormats()
+                        .withFormats(CONSOLE, TXT, HTML, XML));
+    }
+
+    @Override
+    public InjectableStepsFactory stepsFactory() {
+        return new InstanceStepsFactory(configuration(), new TransferSteps());
+    }
 }
