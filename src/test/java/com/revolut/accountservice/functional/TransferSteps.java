@@ -4,6 +4,7 @@ import com.revolut.accountservice.App;
 import com.revolut.accountservice.PropertiesConfig;
 import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.dao.AccountDAOImpl;
+import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.util.Constants;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
@@ -20,9 +21,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import static com.revolut.accountservice.util.Constants.toDataBaseFormat;
-
 
 public class TransferSteps {
     private HttpURLConnection httpURLTransferConnection;
@@ -44,11 +42,11 @@ public class TransferSteps {
                     .prepareStatement(accountDaoProperties.getProperty("insert_into_account_with_id"));
 
             preparedStatement.setLong(1, senderId);
-            preparedStatement.setLong(2, toDataBaseFormat(senderBalance));
+            preparedStatement.setLong(2, Account.toDataBaseFormat(senderBalance));
             preparedStatement.execute();
 
             preparedStatement.setLong(1, receiverId);
-            preparedStatement.setLong(2, toDataBaseFormat(receiverBalance));
+            preparedStatement.setLong(2, Account.toDataBaseFormat(receiverBalance));
             preparedStatement.execute();
         }
         AccountDAO accountDAO = new AccountDAOImpl(dataSource, accountDaoProperties, propertiesConfig.isFairLocks());

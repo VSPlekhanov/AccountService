@@ -13,13 +13,13 @@ import static org.mockito.Mockito.*;
 class TransferHandlerTest {
     @Test
     public void correctTransferWithFloatAmount() throws Exception {
-        TransferPayload transfer = new TransferPayload("1", "2", "100.23");
+        TransferPayload transfer = new TransferPayload("1", "2", "100.22");
         assertTrue(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
         TransferHandler handler = new TransferHandler(accountDAO);
         assertEquals(new Answer(204), handler.process(transfer, Collections.emptyMap()));
-        verify(accountDAO, only()).transfer(1L, 2L, 10023L);
+        verify(accountDAO, only()).transfer(1L, 2L, 10022L);
     }
 
     @Test
@@ -70,7 +70,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectId() throws Exception {
         TransferPayload transfer = new TransferPayload("incorrect", "21",
-                "100.23");
+                "100.22");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
@@ -81,7 +81,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectAmountTooMuchDigitsAfterPoint() throws Exception {
         TransferPayload transfer = new TransferPayload("12", "21",
-                "100.233");
+                "100.222");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
@@ -136,7 +136,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectSenderIdNull() throws Exception {
         TransferPayload transfer = new TransferPayload(null, "21",
-                "100.23");
+                "100.22");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
@@ -147,7 +147,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectReceiverIdNull() throws Exception {
         TransferPayload transfer = new TransferPayload("12", null,
-                "100.23");
+                "100.22");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
@@ -158,7 +158,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectSameAccountId() throws Exception {
         TransferPayload transfer = new TransferPayload("12", "12",
-                "100.23");
+                "100.22");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);
@@ -169,7 +169,7 @@ class TransferHandlerTest {
     @Test
     public void incorrectSameAccountIdButDifferentStrings() throws Exception {
         TransferPayload transfer = new TransferPayload("0012", "12",
-                "100.23");
+                "100.22");
         assertFalse(transfer.isValid());
 
         AccountDAO accountDAO = mock(AccountDAO.class);

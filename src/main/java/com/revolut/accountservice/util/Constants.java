@@ -22,8 +22,4 @@ public class Constants {
     public static final String EXAMPLE_TRANSFER_BODY = "{\"senderAccountId\": %s, \"receiverAccountId\": %s, \"amount\": %s}";
 
     public static final String DEFAULT_RESPONSE_BODY_GET_ACCOUNT = "{\"id\":%s,\"balance\":%s}";
-
-    public static long toDataBaseFormat(long balance){
-        return balance * 100;
-    }
 }

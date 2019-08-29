@@ -2,10 +2,12 @@ package com.revolut.accountservice.service.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.revolut.accountservice.model.Account;
+import com.revolut.accountservice.util.Constants;
 
 import java.util.Optional;
 
 public class TransferPayload implements Validable {
+    public static final String REGEXP = "\\d+(.\\d{1,2})?";
     private long senderAccountId;
     private long receiverAccountId;
     private long amount;
@@ -27,17 +29,16 @@ public class TransferPayload implements Validable {
                            @JsonProperty("amount") String amount) {
         if (amount == null) {
             errorMessage = "amount is null!";
+        } else if (!amount.matches(REGEXP)){
+            errorMessage = "wrong format of the amount value (no more than two digits after point is allowed)";
         } else {
             try {
                 this.senderAccountId = Account.parseAccountId(senderAccountId);
                 this.receiverAccountId = Account.parseAccountId(receiverAccountId);
-                double doubleAmount = Double.parseDouble(amount) * 100;
-                this.amount = (long) doubleAmount;
+                this.amount = Account.toDataBaseFormat((Double.parseDouble(amount)));
 
                 if (this.amount <= 0) {
                     errorMessage = "Amount should be more than zero!";
-                } else if (doubleAmount - this.amount != 0) {
-                    errorMessage = "Wrong amount format, too much digits after point!";
                 } else if (this.receiverAccountId == this.senderAccountId) {
                     errorMessage = "Transfer to the same account is not allowed!";
                 }

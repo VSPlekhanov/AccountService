@@ -2,6 +2,7 @@ package com.revolut.accountservice;
 
 import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.dao.AccountDAOImpl;
+import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.service.GetAccountHandler;
 import com.revolut.accountservice.service.TransferHandler;
 import com.revolut.accountservice.util.Constants;
@@ -44,12 +45,12 @@ public class App {
 
     public static void fillTheDataBase(DataSource dataSource, int accountsCount, long accountsBalance, Properties daoProps) {
         try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement(daoProps.getProperty("insert_into_account")).execute();
-            connection.prepareStatement(daoProps.getProperty("insert_into_account")).execute();
+            connection.prepareStatement(daoProps.getProperty("drop_table_account")).execute();
+            connection.prepareStatement(daoProps.getProperty("create_account_table")).execute();
             PreparedStatement preparedStatement = connection
                     .prepareStatement(daoProps.getProperty("insert_into_account"));
 
-            preparedStatement.setLong(1, Constants.toDataBaseFormat(accountsBalance));
+            preparedStatement.setLong(1, Account.toDataBaseFormat(accountsBalance));
             for (int i = 0; i < accountsCount; i++) {
                 preparedStatement.execute();
             }

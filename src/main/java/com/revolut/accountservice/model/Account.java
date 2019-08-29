@@ -50,4 +50,12 @@ public class Account {
     public BigDecimal getBalance() {
         return BigDecimal.valueOf(balance).divide(BigDecimal.valueOf(100));
     }
+
+
+    public static long toDataBaseFormat(long balance){
+        return balance * 100;
+    }
+    public static long toDataBaseFormat(double balance){
+        return (long) (balance * 100);
+    }
 }
