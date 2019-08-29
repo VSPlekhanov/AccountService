@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static spark.Spark.*;
 
@@ -30,24 +31,23 @@ public class App {
         PropertiesConfig propertiesConfig = PropertiesConfig.getPropertiesConfig();
         dataSource.setUrl(propertiesConfig.getDatabaseUrl());
         log.info("Application is started with DataBase url: " + propertiesConfig.getDatabaseUrl());
-        fillTheDataBase(dataSource, propertiesConfig.getAccountsCount(), propertiesConfig.getAccountsBalance());
-        startApp(dataSource, propertiesConfig.isFairLocks());
+        fillTheDataBase(dataSource, propertiesConfig.getAccountsCount(), propertiesConfig.getAccountsBalance(), propertiesConfig.getAccountDaoProperties());
+        AccountDAO accountDAO = new AccountDAOImpl(dataSource, propertiesConfig.getAccountDaoProperties(), propertiesConfig.isFairLocks());
+        startApp(accountDAO);
     }
 
-    public static void startApp(DataSource dataSource, boolean fairLocks) {
-        AccountDAO accountDAO = new AccountDAOImpl(dataSource, fairLocks);
-
+    public static void startApp(AccountDAO accountDAO) {
         get(Constants.GET_ACCOUNT_REQUEST_URL + Constants.ACCOUNT_ID_QUERY_PARAMETER, new GetAccountHandler(accountDAO));
 
         post(Constants.TRANSFER_REQUEST_URL, new TransferHandler(accountDAO));
     }
 
-    public static void fillTheDataBase(DataSource dataSource, int accountsCount, long accountsBalance) {
+    public static void fillTheDataBase(DataSource dataSource, int accountsCount, long accountsBalance, Properties daoProps) {
         try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement(Constants.DROP_TABLE_ACCOUNTS).execute();
-            connection.prepareStatement(Constants.CREATE_ACCOUNT_TABLE).execute();
+            connection.prepareStatement(daoProps.getProperty("insert_into_account")).execute();
+            connection.prepareStatement(daoProps.getProperty("insert_into_account")).execute();
             PreparedStatement preparedStatement = connection
-                    .prepareStatement(Constants.INSERT_INTO_ACCOUNT);
+                    .prepareStatement(daoProps.getProperty("insert_into_account"));
 
             preparedStatement.setLong(1, Constants.toDataBaseFormat(accountsBalance));
             for (int i = 0; i < accountsCount; i++) {

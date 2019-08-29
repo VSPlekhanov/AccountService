@@ -1,5 +1,6 @@
 package com.revolut.accountservice.dao;
 
+import com.revolut.accountservice.PropertiesConfig;
 import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
@@ -14,12 +15,14 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountDAOImplTest {
     private static DataSource dataSource;
     private static AccountDAO accountDAO;
+    private static Properties daoProperties;
 
     private static final long FIRST_ACCOUNT_DEFAULT_BALANCE = 1_000_000;
     private static final long SECOND_ACCOUNT_DEFAULT_BALANCE = 2_000_000;
@@ -32,24 +35,25 @@ class AccountDAOImplTest {
 
     @BeforeAll
     static void beforeClass() {
+        PropertiesConfig propertiesConfig = PropertiesConfig.getPropertiesConfig();
         BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl(Constants.TEST_DATABASE_URL);
+        basicDataSource.setUrl(propertiesConfig.getDatabaseUrl());
         dataSource = basicDataSource;
-        accountDAO = new AccountDAOImpl(dataSource, false);
+        accountDAO = new AccountDAOImpl(dataSource, propertiesConfig.getAccountDaoProperties(), propertiesConfig.isFairLocks());
     }
 
     @BeforeEach
     void setUp() {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement createTable = connection.prepareStatement(Constants.CREATE_ACCOUNT_TABLE)) {
+             PreparedStatement createTable = connection.prepareStatement(daoProperties.getProperty("create_account_table"))) {
             createTable.execute();
 
             try (PreparedStatement insertFirstAccount = connection.prepareStatement(
-                    Constants.INSERT_INTO_ACCOUNT);
+                    daoProperties.getProperty("insert_into_account"));
                  PreparedStatement insertSecondAccount = connection.prepareStatement(
-                         Constants.INSERT_INTO_ACCOUNT);
+                         daoProperties.getProperty("insert_into_account"));
                  PreparedStatement insertThirdAccount = connection.prepareStatement(
-                         Constants.INSERT_INTO_ACCOUNT)) {
+                         daoProperties.getProperty("insert_into_account"))) {
 
                 insertFirstAccount.setLong(1, (FIRST_ACCOUNT_DEFAULT_BALANCE));
                 insertFirstAccount.execute();
@@ -69,7 +73,7 @@ class AccountDAOImplTest {
     void tearDown() {
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(Constants.DROP_TABLE_ACCOUNTS)) {
+             PreparedStatement statement = connection.prepareStatement(daoProperties.getProperty("drop_table_account"))) {
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();

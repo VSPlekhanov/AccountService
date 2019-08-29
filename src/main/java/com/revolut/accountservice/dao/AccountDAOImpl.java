@@ -3,7 +3,6 @@ package com.revolut.accountservice.dao;
 import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
-import com.revolut.accountservice.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -20,9 +20,11 @@ public class AccountDAOImpl implements AccountDAO {
     private static final Logger log = LoggerFactory.getLogger(AccountDAOImpl.class);
     private final Lock readLock;
     private final Lock writeLock;
+    private final Properties properties;
 
-    public AccountDAOImpl(DataSource dataSource, boolean fairLocks) {
+    public AccountDAOImpl(DataSource dataSource, Properties properties, boolean fairLocks) {
         this.dataSource = dataSource;
+        this.properties = properties;
         ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock(fairLocks);
         readLock = reentrantReadWriteLock.readLock();
         writeLock = reentrantReadWriteLock.writeLock();
@@ -41,8 +43,8 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public void transfer(long senderId, long receiverId, long amount) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement updateSenderAccount = connection.prepareStatement(Constants.UPDATE_ACCOUNT_BY_ID);
-             PreparedStatement updateReceiverAccount = connection.prepareStatement(Constants.UPDATE_ACCOUNT_BY_ID)) {
+             PreparedStatement updateSenderAccount = connection.prepareStatement(properties.getProperty("update_account_by_id"));
+             PreparedStatement updateReceiverAccount = connection.prepareStatement(properties.getProperty("update_account_by_id"))) {
             connection.setAutoCommit(false);
             writeLock.lock();
             try {
@@ -75,7 +77,7 @@ public class AccountDAOImpl implements AccountDAO {
 
     private Account getAccount(long accountId, Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                Constants.GET_ACCOUNT_BY_ID)) {
+                properties.getProperty("get_account_by_id"))) {
             preparedStatement.setLong(1, accountId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (!resultSet.next()) {

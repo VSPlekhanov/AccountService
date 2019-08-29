@@ -1,6 +1,9 @@
 package com.revolut.accountservice.functional;
 
 import com.revolut.accountservice.App;
+import com.revolut.accountservice.PropertiesConfig;
+import com.revolut.accountservice.dao.AccountDAO;
+import com.revolut.accountservice.dao.AccountDAOImpl;
 import com.revolut.accountservice.util.Constants;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.io.IOUtils;
@@ -16,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import static com.revolut.accountservice.util.Constants.toDataBaseFormat;
 
@@ -28,14 +32,16 @@ public class TransferSteps {
             "and the second account with id $receiverId and balance $receiverBalance")
     public void prepareDataBaseAndStartTheApp(long senderId, long senderBalance, long receiverId, long receiverBalance)
             throws SQLException, IOException {
+        PropertiesConfig propertiesConfig = PropertiesConfig.getPropertiesConfig();
+        Properties accountDaoProperties = propertiesConfig.getAccountDaoProperties();
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl(Constants.TEST_DATABASE_URL);
+        dataSource.setUrl(propertiesConfig.getDatabaseUrl());
 
         try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement(Constants.DROP_TABLE_ACCOUNTS).execute();
-            connection.prepareStatement(Constants.CREATE_ACCOUNT_TABLE).execute();
+            connection.prepareStatement(accountDaoProperties.getProperty("drop_table_account")).execute();
+            connection.prepareStatement(accountDaoProperties.getProperty("create_account_table")).execute();
             PreparedStatement preparedStatement = connection
-                    .prepareStatement(Constants.INSERT_INTO_ACCOUNT_WITH_ID);
+                    .prepareStatement(accountDaoProperties.getProperty("insert_into_account_with_id"));
 
             preparedStatement.setLong(1, senderId);
             preparedStatement.setLong(2, toDataBaseFormat(senderBalance));
@@ -45,7 +51,8 @@ public class TransferSteps {
             preparedStatement.setLong(2, toDataBaseFormat(receiverBalance));
             preparedStatement.execute();
         }
-        App.startApp(dataSource, false);
+        AccountDAO accountDAO = new AccountDAOImpl(dataSource, accountDaoProperties, propertiesConfig.isFairLocks());
+        App.startApp(accountDAO);
     }
 
     @When("the user sends a transfer request with senderAccountId $senderAccountId" +
