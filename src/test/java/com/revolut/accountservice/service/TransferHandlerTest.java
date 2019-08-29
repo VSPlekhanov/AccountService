@@ -181,4 +181,17 @@ class TransferHandlerTest
 		assertEquals(400, handler.process(transfer, Collections.emptyMap()).getCode());
 	}
 	
+	@Test
+	public void incorrectSameAccountIdButDifferentStrings() throws Exception
+	{
+		TransferPayload transfer = new TransferPayload("0012", "12",
+				"100.23");
+		assertFalse(transfer.isValid());
+		
+		AccountDAO accountDAO = mock(AccountDAO.class);
+		TransferHandler handler = new TransferHandler(accountDAO);
+		assertEquals(400, handler.process(transfer, Collections.emptyMap()).getCode());
+	}
+	
+	
 }

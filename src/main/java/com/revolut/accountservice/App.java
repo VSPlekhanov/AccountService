@@ -1,10 +1,18 @@
 package com.revolut.accountservice;
+import com.revolut.accountservice.controller.AccountController;
+import com.revolut.accountservice.dao.AccountDAO;
+import com.revolut.accountservice.dao.AccountDAOImpl;
 import com.revolut.accountservice.util.Constants;
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import javax.print.attribute.IntegerSyntax;
+import javax.sql.DataSource;
+import javax.xml.crypto.Data;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.stream.IntStream;
 
 import static spark.Spark.get;
 
@@ -16,21 +24,32 @@ public class App
 		// TODO: 8/26/2019 handle all errors
 		// TODO: 8/26/2019 write all tests
 		// TODO: 8/27/2019 javadoc, rest api docs
-		// TODO: 8/27/2019 handle case when there is no acocunt with given id
 		// TODO: 8/28/2019 same error handling occurs
-		get("/hello", (req, res) -> "Hello, World!");
-		createNewDatabase();
+		startApp();
 		
 	}
 	
-	public static void createNewDatabase(){
+	public static void startApp(){
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl(Constants.DATABASE_URL);
-		try
+		fillTheDataBase(dataSource);
+		AccountDAO accountDAO = new AccountDAOImpl(dataSource);
+		new AccountController(accountDAO);
+	}
+	
+	public static void fillTheDataBase(DataSource dataSource){
+		try(Connection connection = dataSource.getConnection())
 		{
-			Connection connection = dataSource.getConnection();
-			Statement statement = connection.createStatement();
-			System.out.println(statement);
+			connection.prepareStatement(Constants.CREATE_ACCOUNT_TABLE).execute();
+			PreparedStatement preparedStatement = connection
+					.prepareStatement(Constants.INSERT_INTO_ACCOUNT);
+			
+			preparedStatement.setLong(1, 100_000);
+			for(int i = 0; i < 10; i++)
+			{
+				preparedStatement.execute();
+			}
+			
 		} catch(SQLException e)
 		{
 			e.printStackTrace();
