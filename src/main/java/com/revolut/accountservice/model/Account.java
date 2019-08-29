@@ -19,8 +19,8 @@ public class Account {
     }
 
     public Account(ResultSet resultSet) throws SQLException {
-        id = resultSet.getLong(1);
-        balance = resultSet.getLong(2);
+        id = resultSet.getLong("id");
+        balance = resultSet.getLong("balance");
     }
 
     public long getId() {
@@ -28,7 +28,7 @@ public class Account {
     }
 
     @JsonIgnore
-    public long getLongBalance() {
+    public long getBalanceInDatabaseFormat() {
         return balance;
     }
 

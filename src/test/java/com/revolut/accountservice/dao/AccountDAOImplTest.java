@@ -4,7 +4,6 @@ import com.revolut.accountservice.PropertiesConfig;
 import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
-import com.revolut.accountservice.util.Constants;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -84,15 +83,15 @@ class AccountDAOImplTest {
     @Test
     void getAccount() throws Exception {
         Account firstAccount = accountDAO.getAccount(FIRST_ACCOUNT_ID);
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, firstAccount.getBalanceInDatabaseFormat());
         assertEquals(FIRST_ACCOUNT_ID, firstAccount.getId());
 
         Account secondAccount = accountDAO.getAccount(SECOND_ACCOUNT_ID);
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, secondAccount.getLongBalance());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, secondAccount.getBalanceInDatabaseFormat());
         assertEquals(SECOND_ACCOUNT_ID, secondAccount.getId());
 
         Account thirdAccount = accountDAO.getAccount(THIRD_ACCOUNT_ID);
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, thirdAccount.getLongBalance());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, thirdAccount.getBalanceInDatabaseFormat());
         assertEquals(THIRD_ACCOUNT_ID, thirdAccount.getId());
     }
 
@@ -101,9 +100,9 @@ class AccountDAOImplTest {
         long amount = FIRST_ACCOUNT_DEFAULT_BALANCE;
         accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
 
-        assertEquals(0, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(0, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
     @Test
@@ -111,9 +110,9 @@ class AccountDAOImplTest {
         assertThrows(InsufficientFundsException.class,
                 () -> accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, FIRST_ACCOUNT_DEFAULT_BALANCE + 1));
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
     @Test
@@ -122,9 +121,9 @@ class AccountDAOImplTest {
         accountDAO.transfer(FIRST_ACCOUNT_ID, SECOND_ACCOUNT_ID, amount);
         accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE - (amount), accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE - (amount), accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE + (amount), accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
     @Test
@@ -134,9 +133,9 @@ class AccountDAOImplTest {
         accountDAO.transfer(SECOND_ACCOUNT_ID, THIRD_ACCOUNT_ID, amount);
         accountDAO.transfer(THIRD_ACCOUNT_ID, FIRST_ACCOUNT_ID, amount);
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
 
@@ -147,9 +146,9 @@ class AccountDAOImplTest {
                 () -> accountDAO.transfer(FIRST_ACCOUNT_ID + SECOND_ACCOUNT_ID + THIRD_ACCOUNT_ID
                         , SECOND_ACCOUNT_ID, amount));
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
     @Test
@@ -159,9 +158,9 @@ class AccountDAOImplTest {
                 () -> accountDAO.transfer(FIRST_ACCOUNT_ID
                         , FIRST_ACCOUNT_ID + SECOND_ACCOUNT_ID + THIRD_ACCOUNT_ID, amount));
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
     @Test
@@ -201,9 +200,9 @@ class AccountDAOImplTest {
             e.printStackTrace();
         }
 
-        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getLongBalance());
-        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getLongBalance());
-        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getLongBalance());
+        assertEquals(FIRST_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(FIRST_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(SECOND_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(SECOND_ACCOUNT_ID).getBalanceInDatabaseFormat());
+        assertEquals(THIRD_ACCOUNT_DEFAULT_BALANCE, accountDAO.getAccount(THIRD_ACCOUNT_ID).getBalanceInDatabaseFormat());
     }
 
 }

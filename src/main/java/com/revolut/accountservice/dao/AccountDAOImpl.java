@@ -48,12 +48,12 @@ public class AccountDAOImpl implements AccountDAO {
             connection.setAutoCommit(false);
             writeLock.lock();
             try {
-                long senderNewBalance = getAccount(senderId).getLongBalance() - amount;
+                long senderNewBalance = getAccount(senderId, connection).getBalanceInDatabaseFormat() - amount;
                 if (senderNewBalance < 0) {
                     throw new InsufficientFundsException("insufficient funds for the transaction");
                 }
 
-                long receiverNewBalance = getAccount(receiverId).getLongBalance() + amount;
+                long receiverNewBalance = getAccount(receiverId, connection).getBalanceInDatabaseFormat() + amount;
 
                 updateSenderAccount.setLong(1, senderNewBalance);
                 updateSenderAccount.setLong(2, senderId);
