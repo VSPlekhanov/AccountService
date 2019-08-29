@@ -35,7 +35,7 @@ class AccountDAOImplTest {
         BasicDataSource basicDataSource = new BasicDataSource();
         basicDataSource.setUrl(Constants.DATABASE_URL);
         dataSource = basicDataSource;
-        accountDAO = new AccountDAOImpl(dataSource);
+        accountDAO = new AccountDAOImpl(dataSource, false);
     }
 
     @BeforeEach
@@ -51,13 +51,13 @@ class AccountDAOImplTest {
                  PreparedStatement insertThirdAccount = connection.prepareStatement(
                          Constants.INSERT_INTO_ACCOUNT)) {
 
-                insertFirstAccount.setLong(1, FIRST_ACCOUNT_DEFAULT_BALANCE);
+                insertFirstAccount.setLong(1, (FIRST_ACCOUNT_DEFAULT_BALANCE));
                 insertFirstAccount.execute();
 
-                insertSecondAccount.setLong(1, SECOND_ACCOUNT_DEFAULT_BALANCE);
+                insertSecondAccount.setLong(1, (SECOND_ACCOUNT_DEFAULT_BALANCE));
                 insertSecondAccount.execute();
 
-                insertThirdAccount.setLong(1, THIRD_ACCOUNT_DEFAULT_BALANCE);
+                insertThirdAccount.setLong(1, (THIRD_ACCOUNT_DEFAULT_BALANCE));
                 insertThirdAccount.execute();
             }
         } catch (SQLException e) {

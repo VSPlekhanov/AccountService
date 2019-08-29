@@ -17,6 +17,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static com.revolut.accountservice.util.Constants.toDataBaseFormat;
+
+
 public class TransferSteps {
     private HttpURLConnection httpURLTransferConnection;
     private HttpURLConnection httpURLGetAccountConnection;
@@ -35,14 +38,14 @@ public class TransferSteps {
                     .prepareStatement(Constants.INSERT_INTO_ACCOUNT_WITH_ID);
 
             preparedStatement.setLong(1, senderId);
-            preparedStatement.setLong(2, senderBalance * 100);
+            preparedStatement.setLong(2, toDataBaseFormat(senderBalance));
             preparedStatement.execute();
 
             preparedStatement.setLong(1, receiverId);
-            preparedStatement.setLong(2, receiverBalance * 100);
+            preparedStatement.setLong(2, toDataBaseFormat(receiverBalance));
             preparedStatement.execute();
         }
-        App.startApp(dataSource);
+        App.startApp(dataSource, false);
     }
 
     @When("the user sends a transfer request with senderAccountId $senderAccountId" +
@@ -72,7 +75,7 @@ public class TransferSteps {
     @When("user sends a getAccount request with accountId $accountId")
     public void sendGetAccountRequest(String accountId)
             throws IOException {
-        URL getAccountUrl = new URL(Constants.HOST + Constants.GET_REQUEST_URL + accountId);
+        URL getAccountUrl = new URL(Constants.HOST + Constants.GET_ACCOUNT_REQUEST_URL + accountId);
         httpURLGetAccountConnection = (HttpURLConnection) getAccountUrl.openConnection();
         httpURLGetAccountConnection.setRequestMethod("GET");
         httpURLGetAccountConnection.setConnectTimeout(10_000);

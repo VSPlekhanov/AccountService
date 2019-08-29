@@ -4,6 +4,7 @@ import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.EmptyPayload;
+import com.revolut.accountservice.util.Constants;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -13,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GetAccountHandlerTest {
+
+
     @Test
     public void correctAccountId() throws Exception {
         Account account = new Account(123L, 1000L);
@@ -20,7 +23,7 @@ class GetAccountHandlerTest {
         GetAccountHandler handler = new GetAccountHandler(accountDAO);
         when(accountDAO.getAccount(account.getId())).thenReturn(account);
         assertEquals(new Answer(200, "{\"id\":123,\"balance\":10}"),
-                handler.process(new EmptyPayload(), Map.of("accountId", "123")));
+                handler.process(new EmptyPayload(), Map.of(Constants.ACCOUNT_ID_QUERY_PARAMETER, "123")));
     }
 
     @Test
@@ -30,7 +33,7 @@ class GetAccountHandlerTest {
         GetAccountHandler handler = new GetAccountHandler(accountDAO);
         when(accountDAO.getAccount(account.getId())).thenReturn(account);
         assertEquals(new Answer(200, "{\"id\":123,\"balance\":0}"),
-                handler.process(new EmptyPayload(), Map.of("accountId", "123")));
+                handler.process(new EmptyPayload(), Map.of(Constants.ACCOUNT_ID_QUERY_PARAMETER, "123")));
     }
 
     @Test
@@ -50,7 +53,7 @@ class GetAccountHandlerTest {
         GetAccountHandler handler = new GetAccountHandler(accountDAO);
         when(accountDAO.getAccount(account.getId())).thenReturn(account);
         assertEquals(400,
-                handler.process(new EmptyPayload(), Map.of("accountId", "123.12")).getCode());
+                handler.process(new EmptyPayload(), Map.of(Constants.ACCOUNT_ID_QUERY_PARAMETER, "123.12")).getCode());
     }
 
     @Test
@@ -60,6 +63,6 @@ class GetAccountHandlerTest {
         GetAccountHandler handler = new GetAccountHandler(accountDAO);
         when(accountDAO.getAccount(account.getId())).thenReturn(account);
         assertEquals(400,
-                handler.process(new EmptyPayload(), Map.of("accountId", "incorrect")).getCode());
+                handler.process(new EmptyPayload(), Map.of(Constants.ACCOUNT_ID_QUERY_PARAMETER, "incorrect")).getCode());
     }
 }

@@ -21,9 +21,9 @@ public class AccountDAOImpl implements AccountDAO {
     private final Lock readLock;
     private final Lock writeLock;
 
-    public AccountDAOImpl(DataSource dataSource) {
+    public AccountDAOImpl(DataSource dataSource, boolean fairLocks) {
         this.dataSource = dataSource;
-        ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+        ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock(fairLocks);
         readLock = reentrantReadWriteLock.readLock();
         writeLock = reentrantReadWriteLock.writeLock();
     }

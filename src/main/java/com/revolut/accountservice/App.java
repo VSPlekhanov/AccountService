@@ -15,41 +15,42 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
 
+    public static final int DEFAULT_BALANCE = 1000;
+    public static final int DEFAULT_COUNT = 10;
+    public static final boolean FAIR_LOCKS = false;
+
     public static void main(String[] args) {
-        // TODO: 8/26/2019 configure app starting
-        // TODO: 8/29/2019 add the params such as database url, contentType, fair thread hanling
-        log.info("Application is started with DataBase url: " + Constants.DATABASE_URL);
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl(Constants.DATABASE_URL);
-        fillTheDataBase(dataSource);
-        startApp(dataSource);
+        PropertiesConfig propertiesConfig = PropertiesConfig.getPropertiesConfig();
+        dataSource.setUrl(propertiesConfig.getDatabaseUrl());
+        log.info("Application is started with DataBase url: " + Constants.DATABASE_URL);
+        fillTheDataBase(dataSource, propertiesConfig.getAccountsCount(), propertiesConfig.getAccountsBalance());
+        startApp(dataSource, propertiesConfig.isFairLocks());
     }
 
-    public static void startApp(DataSource dataSource) {
-        AccountDAO accountDAO = new AccountDAOImpl(dataSource);
+    public static void startApp(DataSource dataSource, boolean fairLocks) {
+        AccountDAO accountDAO = new AccountDAOImpl(dataSource, fairLocks);
 
-        get("/:accountid", new GetAccountHandler(accountDAO));
+        get(Constants.GET_ACCOUNT_REQUEST_URL + Constants.ACCOUNT_ID_QUERY_PARAMETER, new GetAccountHandler(accountDAO));
 
-        post("/transfer", new TransferHandler(accountDAO));
+        post(Constants.TRANSFER_REQUEST_URL, new TransferHandler(accountDAO));
     }
 
-
-    public static void fillTheDataBase(DataSource dataSource) {
+    public static void fillTheDataBase(DataSource dataSource, int accountsCount, long accountsBalance) {
         try (Connection connection = dataSource.getConnection()) {
             connection.prepareStatement(Constants.DROP_TABLE_ACCOUNTS).execute();
             connection.prepareStatement(Constants.CREATE_ACCOUNT_TABLE).execute();
             PreparedStatement preparedStatement = connection
                     .prepareStatement(Constants.INSERT_INTO_ACCOUNT);
 
-            preparedStatement.setLong(1, 100_000);
-            for (int i = 0; i < 10; i++) {
+            preparedStatement.setLong(1, Constants.toDataBaseFormat(accountsBalance));
+            for (int i = 0; i < accountsCount; i++) {
                 preparedStatement.execute();
             }
 

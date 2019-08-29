@@ -19,7 +19,7 @@ public class Account {
     }
 
     public Account(ResultSet resultSet) throws SQLException {
-        id = resultSet.getInt(1);
+        id = resultSet.getLong(1);
         balance = resultSet.getLong(2);
     }
 
