@@ -1,5 +1,6 @@
 package com.revolut.accountservice.service;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revolut.accountservice.dao.AccountDAO;
@@ -61,13 +62,19 @@ public abstract class AbstractRequestHandler<V extends Validable>
 	@Override
 	public Object handle(Request request, Response response) throws Exception
 	{
-		ObjectMapper objectMapper = new ObjectMapper();
-		String body = request.body().isEmpty()
-				? EMPTY_BODY
-				: request.body();
-		V value = objectMapper.readValue(body, valueClass);
-		Map<String, String> queryParams = request.params();
-		Answer answer = process(value, queryParams);
+		Answer answer;
+		try
+		{
+			ObjectMapper objectMapper = new ObjectMapper();
+			String body = request.body().isEmpty()
+					? EMPTY_BODY
+					: request.body();
+			V value = objectMapper.readValue(body, valueClass);
+			Map<String, String> queryParams = request.params();
+			answer = process(value, queryParams);
+		} catch(JsonParseException e){
+			answer = new Answer(HTTP_BAD_REQUEST, e.getMessage());
+		}
 		response.status(answer.getCode());
 		response.type(CONTENT_TYPE);
 		response.body(answer.getBody());

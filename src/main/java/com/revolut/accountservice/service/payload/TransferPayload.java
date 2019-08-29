@@ -1,9 +1,7 @@
 package com.revolut.accountservice.service.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.beans.ConstructorProperties;
 import java.util.Optional;
 
 public class TransferPayload implements Validable
@@ -11,25 +9,11 @@ public class TransferPayload implements Validable
 	private long senderAccountId;
 	private long receiverAccountId;
 	private long amount;
-	@JsonIgnore
 	private String errorMessage;
 	
 	@Override public boolean isValid()
 	{
-		if (errorMessage != null){
-			return false;
-		}
-		if(amount <= 0)
-		{
-			errorMessage = "Amount should be more than zero!";
-			return false;
-		}
-		if(receiverAccountId == senderAccountId)
-		{
-			errorMessage = "Transfer to the same account is not allowed!";
-			return false;
-		}
-		return true;
+		return errorMessage == null;
 	}
 	
 	@Override public Optional<String> gerErrorMessage()
@@ -38,18 +22,23 @@ public class TransferPayload implements Validable
 	}
 	
 	
-//	@ConstructorProperties({"senderAccountId", "receiverAccountId", "amount"})
 	public TransferPayload(@JsonProperty("senderAccountId") String senderAccountId,
 			@JsonProperty("receiverAccountId") String receiverAccountId,
 			@JsonProperty("amount") String amount)
 	{
-		if(senderAccountId == null){
+		if(senderAccountId == null)
+		{
 			errorMessage = "senderAccountId is null!";
-		}else if(receiverAccountId == null){
+		}
+		else if(receiverAccountId == null)
+		{
 			errorMessage = "receiverAccountId is null!";
-		}else if(amount == null){
+		}
+		else if(amount == null)
+		{
 			errorMessage = "amount is null!";
-		}else
+		}
+		else
 		{
 			try
 			{
@@ -58,13 +47,21 @@ public class TransferPayload implements Validable
 				double doubleAmount = Double.parseDouble(amount) * 100;
 				this.amount = (long) doubleAmount;
 				
-				if(doubleAmount - this.amount != 0)
+				if(this.amount <= 0)
+				{
+					errorMessage = "Amount should be more than zero!";
+				}
+				else if(doubleAmount - this.amount != 0)
 				{
 					errorMessage = "Wrong amount format, too much digits after point!";
 				}
+				else if(this.receiverAccountId == this.senderAccountId)
+				{
+					errorMessage = "Transfer to the same account is not allowed!";
+				}
 			} catch(NumberFormatException e)
 			{
-				errorMessage = String.format("%s : %s", e.getClass().getName(), e.getMessage());
+				errorMessage = e.toString();
 			}
 		}
 	}
