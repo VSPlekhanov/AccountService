@@ -4,7 +4,6 @@ import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.util.Constants;
-import org.apache.logging.log4j.message.LocalizedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

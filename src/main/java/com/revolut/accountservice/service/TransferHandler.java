@@ -5,6 +5,7 @@ import com.revolut.accountservice.exception.InsufficientFundsException;
 import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.TransferPayload;
+import com.revolut.accountservice.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,12 @@ public class TransferHandler extends AbstractRequestHandler<TransferPayload>
 					value.getAmount());
 		} catch(NoSuchAccountException | InsufficientFundsException e)
 		{
-			return new Answer(HTTP_BAD_REQUEST, e.toString());
+			return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
 		} catch(Throwable e)
 		{
 			log.error(e.toString());
-			return new Answer(HTTP_SERVER_ERROR);
+			return new Answer(Constants.HTTP_SERVER_ERROR);
 		}
-		return new Answer(HTTP_OK_WITH_NO_BODY);
+		return new Answer(Constants.HTTP_OK_WITH_NO_BODY);
 	}
 }

@@ -7,6 +7,7 @@ import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.Validable;
+import com.revolut.accountservice.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -23,12 +24,6 @@ public abstract class AbstractRequestHandler<V extends Validable>
 	
 	private Class<V> valueClass;
 	protected AccountDAO accountDAO;
-	
-	public static final int HTTP_BAD_REQUEST = 400;
-	public static final int HTTP_OK = 200;
-	public static final int HTTP_OK_WITH_NO_BODY = 204;
-	public static final int HTTP_SERVER_ERROR = 500;
-	public static final String CONTENT_TYPE = "application/json";
 	
 	public AbstractRequestHandler(Class<V> valueClass, AccountDAO accountDAO)
 	{
@@ -48,7 +43,7 @@ public abstract class AbstractRequestHandler<V extends Validable>
 		{
 			String errorMessage = value.gerErrorMessage().orElse("");
 			log.warn(errorMessage);
-			return new Answer(HTTP_BAD_REQUEST, errorMessage);
+			return new Answer(Constants.HTTP_BAD_REQUEST, errorMessage);
 		}
 		else
 		{
@@ -73,10 +68,10 @@ public abstract class AbstractRequestHandler<V extends Validable>
 			Map<String, String> queryParams = request.params();
 			answer = process(value, queryParams);
 		} catch(JsonParseException e){
-			answer = new Answer(HTTP_BAD_REQUEST, e.getMessage());
+			answer = new Answer(Constants.HTTP_BAD_REQUEST, e.getMessage());
 		}
 		response.status(answer.getCode());
-		response.type(CONTENT_TYPE);
+		response.type(Constants.CONTENT_TYPE_JSON);
 		response.body(answer.getBody());
 		return answer.getBody();
 	}

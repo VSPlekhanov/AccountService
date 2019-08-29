@@ -5,6 +5,7 @@ import com.revolut.accountservice.exception.NoSuchAccountException;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.EmptyPayload;
+import com.revolut.accountservice.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,21 +31,21 @@ public class GetAccountHandler extends AbstractRequestHandler<EmptyPayload>
 			if(accountId == null)
 			{
 				log.warn("Failed to get accountId from given queryParams");
-				return new Answer(HTTP_BAD_REQUEST, "accountId is null!");
+				return new Answer(Constants.HTTP_BAD_REQUEST, "accountId is null!");
 			}
 			Account account = accountDAO.getAccount(Long.parseLong(accountId));
-			return new Answer(HTTP_OK, accountToJson(account));
+			return new Answer(Constants.HTTP_OK, accountToJson(account));
 		} catch(NumberFormatException e)
 		{
 			log.warn("Failed to parse accountId from given queryParams");
-			return new Answer(HTTP_BAD_REQUEST, "Cannot parse int value of accountId : " + accountId);
+			return new Answer(Constants.HTTP_BAD_REQUEST, "Cannot parse int value of accountId : " + accountId);
 		} catch(NoSuchAccountException e)
 		{
-			return new Answer(HTTP_BAD_REQUEST, e.toString());
+			return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
 		} catch(Throwable e)
 		{
 			log.error(e.toString());
-			return new Answer(HTTP_SERVER_ERROR);
+			return new Answer(Constants.HTTP_SERVER_ERROR);
 		}
 	}
 }
