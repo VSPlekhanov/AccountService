@@ -69,7 +69,7 @@ public class AccountDAOImpl implements AccountDAO
 				updateSenderAccount.execute();
 				updateReceiverAccount.execute();
 				connection.commit();
-				
+				log.info("The transfer is committed");
 			} catch(SQLException e)
 			{
 				connection.rollback();

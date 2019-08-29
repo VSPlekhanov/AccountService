@@ -6,6 +6,8 @@ import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.model.Account;
 import com.revolut.accountservice.model.Answer;
 import com.revolut.accountservice.service.payload.Validable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -15,10 +17,16 @@ import java.util.Map;
 public abstract class AbstractRequestHandler<V extends Validable>
 		implements RequestHandler<V>, Route
 {
+	private static final Logger log = LoggerFactory.getLogger(AbstractRequestHandler.class);
+	
 	private Class<V> valueClass;
 	protected AccountDAO accountDAO;
 	
-	private static final int HTTP_BAD_REQUEST = 400;
+	public static final int HTTP_BAD_REQUEST = 400;
+	public static final int HTTP_OK = 200;
+	public static final int HTTP_OK_WITH_NO_BODY = 204;
+	public static final int HTTP_SERVER_ERROR = 500;
+	public static final String CONTENT_TYPE = "application/json";
 	
 	public AbstractRequestHandler(Class<V> valueClass, AccountDAO accountDAO)
 	{
@@ -36,7 +44,9 @@ public abstract class AbstractRequestHandler<V extends Validable>
 	{
 		if(!value.isValid())
 		{
-			return new Answer(HTTP_BAD_REQUEST, value.gerErrorMessage().orElse(""));
+			String errorMessage = value.gerErrorMessage().orElse("");
+			log.warn(errorMessage);
+			return new Answer(HTTP_BAD_REQUEST, errorMessage);
 		}
 		else
 		{
@@ -55,7 +65,7 @@ public abstract class AbstractRequestHandler<V extends Validable>
 		Map<String, String> queryParams = request.params();
 		Answer answer = process(value, queryParams);
 		response.status(answer.getCode());
-		response.type("application/json");
+		response.type(CONTENT_TYPE);
 		response.body(answer.getBody());
 		return answer.getBody();
 	}

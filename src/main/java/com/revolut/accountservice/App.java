@@ -4,6 +4,8 @@ import com.revolut.accountservice.dao.AccountDAO;
 import com.revolut.accountservice.dao.AccountDAOImpl;
 import com.revolut.accountservice.util.Constants;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.print.attribute.IntegerSyntax;
 import javax.sql.DataSource;
@@ -12,24 +14,23 @@ import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.stream.IntStream;
 
-import static spark.Spark.get;
 
 public class App
 {
+	private static final Logger log = LoggerFactory.getLogger(App.class);
+	
 	public static void main(String[] args) {
 		// TODO: 8/26/2019 configure app starting
-		// TODO: 8/26/2019 add logging
-		// TODO: 8/26/2019 handle all errors
 		// TODO: 8/26/2019 write all tests
 		// TODO: 8/27/2019 javadoc, rest api docs
-		// TODO: 8/28/2019 same error handling occurs
+		// TODO: 8/29/2019 add the params such as database url, contentType, fair thread hanling
 		startApp();
 		
 	}
 	
 	public static void startApp(){
+		log.info("Application is started with DataBase url: " + Constants.DATABASE_URL);
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl(Constants.DATABASE_URL);
 		fillTheDataBase(dataSource);
@@ -52,7 +53,7 @@ public class App
 			
 		} catch(SQLException e)
 		{
-			e.printStackTrace();
+			log.error("Error while filling the database : " + e.toString());
 		}
 	}
 }
