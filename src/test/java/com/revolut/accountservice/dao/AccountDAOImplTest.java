@@ -33,7 +33,7 @@ class AccountDAOImplTest {
     @BeforeAll
     static void beforeClass() {
         BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl(Constants.DATABASE_URL);
+        basicDataSource.setUrl(Constants.TEST_DATABASE_URL);
         dataSource = basicDataSource;
         accountDAO = new AccountDAOImpl(dataSource, false);
     }

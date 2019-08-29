@@ -1,7 +1,7 @@
 package com.revolut.accountservice.util;
 
 public class Constants {
-    public static final String DATABASE_URL = "jdbc:sqlite:memory:DB";
+    public static final String TEST_DATABASE_URL = "jdbc:sqlite:memory:DB";
 
     public static final String GET_ACCOUNT_BY_ID = "SELECT * FROM account WHERE id = ?";
 
@@ -16,7 +16,7 @@ public class Constants {
 
     public static final String UPDATE_ACCOUNT_BY_ID = "UPDATE account SET balance = ? WHERE id = ?";
 
-    public static final String HOST = "http://localhost:4567";
+    public static final String TEST_HOST = "http://localhost:4567";
 
     public static final String TRANSFER_REQUEST_URL = "/transfer";
 

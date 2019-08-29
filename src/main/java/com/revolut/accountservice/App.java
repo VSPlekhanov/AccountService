@@ -29,7 +29,7 @@ public class App {
         BasicDataSource dataSource = new BasicDataSource();
         PropertiesConfig propertiesConfig = PropertiesConfig.getPropertiesConfig();
         dataSource.setUrl(propertiesConfig.getDatabaseUrl());
-        log.info("Application is started with DataBase url: " + Constants.DATABASE_URL);
+        log.info("Application is started with DataBase url: " + propertiesConfig.getDatabaseUrl());
         fillTheDataBase(dataSource, propertiesConfig.getAccountsCount(), propertiesConfig.getAccountsBalance());
         startApp(dataSource, propertiesConfig.isFairLocks());
     }

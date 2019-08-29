@@ -29,7 +29,7 @@ public class TransferSteps {
     public void prepareDataBaseAndStartTheApp(long senderId, long senderBalance, long receiverId, long receiverBalance)
             throws SQLException, IOException {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setUrl(Constants.DATABASE_URL);
+        dataSource.setUrl(Constants.TEST_DATABASE_URL);
 
         try (Connection connection = dataSource.getConnection()) {
             connection.prepareStatement(Constants.DROP_TABLE_ACCOUNTS).execute();
@@ -52,7 +52,7 @@ public class TransferSteps {
             " and receiverAccountId $receiverAccountId and amount $amount")
     public void sendTransferRequest(String senderAccountId, String receiverAccountId, String amount)
             throws IOException {
-        URL transferUrl = new URL(Constants.HOST + Constants.TRANSFER_REQUEST_URL);
+        URL transferUrl = new URL(Constants.TEST_HOST + Constants.TRANSFER_REQUEST_URL);
         httpURLTransferConnection = (HttpURLConnection) transferUrl.openConnection();
 
         String body = String.format(Constants.EXAMPLE_TRANSFER_BODY, senderAccountId, receiverAccountId, amount);
@@ -75,7 +75,7 @@ public class TransferSteps {
     @When("user sends a getAccount request with accountId $accountId")
     public void sendGetAccountRequest(String accountId)
             throws IOException {
-        URL getAccountUrl = new URL(Constants.HOST + Constants.GET_ACCOUNT_REQUEST_URL + accountId);
+        URL getAccountUrl = new URL(Constants.TEST_HOST + Constants.GET_ACCOUNT_REQUEST_URL + accountId);
         httpURLGetAccountConnection = (HttpURLConnection) getAccountUrl.openConnection();
         httpURLGetAccountConnection.setRequestMethod("GET");
         httpURLGetAccountConnection.setConnectTimeout(10_000);
