@@ -40,6 +40,7 @@ class AccountDAOImplTest {
         basicDataSource.setUrl(propertiesConfig.getDatabaseUrl());
         dataSource = basicDataSource;
         accountDAO = new AccountDAOImpl(dataSource, propertiesConfig.getAccountDaoProperties(), propertiesConfig.isFairLocks());
+        daoProperties = propertiesConfig.getAccountDaoProperties();
     }
 
     @BeforeEach
