@@ -24,11 +24,11 @@ public class TransferHandler extends AbstractRequestHandler<TransferPayload> {
             accountDAO.transfer(value.getSenderAccountId(), value.getReceiverAccountId(),
                     value.getAmount());
         } catch (NoSuchAccountException | InsufficientFundsException e) {
-            return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
+            return Answer.badRequest(e.toString());
         } catch (Throwable e) {
             log.error(e.toString());
-            return new Answer(Constants.HTTP_SERVER_ERROR);
+            return Answer.serverError();
         }
-        return new Answer(Constants.HTTP_OK_WITH_NO_BODY);
+        return Answer.okWithoutBody();
     }
 }

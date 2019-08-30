@@ -25,15 +25,13 @@ public class GetAccountHandler extends AbstractRequestHandler<EmptyPayload> {
         try {
             accountId = queryParams.get(ACCOUNT_ID);
             Account account = accountDAO.getAccount(Account.parseAccountId(accountId));
-            return new Answer(Constants.HTTP_OK, account.toJson());
-        } catch (IllegalArgumentException e) {
+            return Answer.ok(account.toJson());
+        } catch (IllegalArgumentException | NoSuchAccountException e) {
             log.warn(e.toString());
-            return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
-        } catch (NoSuchAccountException e) {
-            return new Answer(Constants.HTTP_BAD_REQUEST, e.toString());
+            return Answer.badRequest(e.toString());
         } catch (Throwable e) {
             log.error(e.toString());
-            return new Answer(Constants.HTTP_SERVER_ERROR);
+            return Answer.serverError();
         }
     }
 }

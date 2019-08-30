@@ -1,5 +1,7 @@
 package com.revolut.accountservice.model;
 
+import com.revolut.accountservice.util.Constants;
+
 public class Answer {
     private int code;
     private String body;
@@ -49,6 +51,18 @@ public class Answer {
     }
 
     public static Answer ok(String body) {
-        return new Answer(200, body);
+        return new Answer(Constants.HTTP_OK, body);
+    }
+
+    public static Answer okWithoutBody() {
+        return new Answer(Constants.HTTP_OK_WITH_NO_BODY);
+    }
+
+    public static Answer badRequest(String body){
+        return new Answer(Constants.HTTP_BAD_REQUEST, body);
+    }
+
+    public static Answer serverError(){
+        return new Answer(Constants.HTTP_SERVER_ERROR);
     }
 }
